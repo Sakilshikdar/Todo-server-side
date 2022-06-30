@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -18,14 +18,36 @@ async function run() {
   try {
     await client.connect();
     const todosCollection = client.db('Todo_app').collection('todos');
+    const newTodoCollection = client.db('Todo_app').collection('newTodo');
 
     app.get('/items', async (req, res) => {
         const query = {};
         const cursor = todosCollection.find(query);
         const products = (await cursor.toArray());
         res.send(products)
+      });
+
+      app.post('/newTodo', async (req, res) => {
+        const newTodo = req.body;
+        const result = await newTodoCollection.insertOne(newTodo)
+        res.send({ success: true, message: "added ", result });
       })
     
+
+      app.get('/todoDetails', async (req, res) => {
+        const query = {}
+        const result = await newTodoCollection.find(query).toArray()
+        res.send(result)
+      }
+      );
+
+      app.delete('/items/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const result = await newTodoCollection.deleteOne(query);
+        res.send(result);
+      })
+
   }
   finally {
 
