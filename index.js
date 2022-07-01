@@ -58,7 +58,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-  res.send('Todo app!')
+  res.send('Todo app here!')
 })
 
 app.listen(port, () => {
